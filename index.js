@@ -45,10 +45,7 @@ app.put('/api/courses/:id', async (req, res) => {
     // search for course
     // if not found return 404
     console.log();
-    if (req.params.id < 1 || req.params.id > courses.length){
-        res.status(404).send('Course not found');
-        return;
-    }
+    if (req.params.id < 1 || req.params.id > courses.length) return res.status(404).send('Course not found');
     
     // Validate
     const result = await validate(req.body);
@@ -65,11 +62,7 @@ app.delete('/api/courses/:id', function(req, res) {
     // look up for the course
     const course = courses.find(c=> c.id === parseInt(req.params.id));
 
-    if (!course) {
-        res.status(404).send("Error: course not found");
-        return;
-    }
-
+    if (!course) return res.status(404).send("Error: course not found");
     // Delete course
     const index = courses.indexOf(course);
     courses.splice(index, 1);
