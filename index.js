@@ -1,3 +1,4 @@
+const joi = require('joi');
 const express = require('express');
 const app = express();
 
@@ -25,7 +26,16 @@ app.get('/api/courses/:id', (req, res) => {
     else res.status(404).send("The course does not exist")
 })
 
-app.post('api/courses', (req, res) => {
+app.post('/api/courses', (req, res) => {
+    // input validation
+    if (!req.body.name) { 
+        res.status(400).send('Name cant be empty.');
+        return;
+    } else if (req.body.name.length < 3) {
+        res.status(400).send('Name cant be less than 3 characters');
+        return;
+    }
+
     const course = {
         id: courses.length+1,
         name: req.body.name
@@ -33,7 +43,8 @@ app.post('api/courses', (req, res) => {
     courses.push(course);
 
     res.send(course);
-})
+});
+
 
 // get PORT number
 const port = process.env.PORT || 3000;
