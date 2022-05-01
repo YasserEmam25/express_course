@@ -8,7 +8,7 @@ let courses = [
     {id:1, name: 'course1'},
     {id:2, name: 'course2'},
     {id:3, name: 'course3'},
-]
+];
 
 app.get('/', (req, res) => {
     res.send("404");
@@ -28,36 +28,58 @@ app.get('/api/courses/:id', (req, res) => {
 
 app.post('/api/courses', async function (req, res)  {
     // input validation
-
-    // if (!req.body.name) { 
-    //     res.status(400).send('Name cant be empty.');
-    //     return;
-    // } else if (req.body.name.length < 3) {
-    //     res.status(400).send('Name cant be less than 3 characters');
-    //     return;
-    // }
-
-    const schema = Joi.object({
-        name: Joi.string().min(3).required(),
-    });
-
-    try {
-        const value = await schema.validateAsync(req.body);
-        res.status(200).send(value);
-
+    const result = validate(req.body);
+    if (result) {
+        res.status(200).send(result);
         const course = {
             id: courses.length+1,
             name: req.body.name
         };
         courses.push(course);
-    } catch (err) {
-        console.log("error");
-        res.status(400).send(err);
-    } 
+    }
 
 });
+
+// update course with 'put' request
+app.put('/api/courses/:id', async (req, res) => {
+    // search for course
+    // if not found return 404
+    console.log();
+    if (req.params.id < 1 || req.params.id > courses.length){
+        res.status(404).send('Course not found');
+        return;
+    }
+    
+    // Validate
+    const result = await validate(req.body);
+    if (result) {
+        res.status(200).send(result);
+
+        courses[req.params.id -1].name = result.name;
+    }
+
+})
 
 
 // get PORT number
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`listening on port ${port}...`))
+
+
+
+async function validate(input) {
+    // schema for validation
+    const schema = Joi.object({
+        name: Joi.string().min(3).required(),
+    });
+
+    try {
+        return await schema.validateAsync(input);
+
+    } catch (err) {
+        console.log("error");
+        res.status(400).send(err);
+        return;
+    } 
+
+}
