@@ -60,6 +60,23 @@ app.put('/api/courses/:id', async (req, res) => {
 
 })
 
+//Delete request
+app.delete('/api/courses/:id', function(req, res) {
+    // look up for the course
+    const course = courses.find(c=> c.id === parseInt(req.params.id));
+
+    if (!course) {
+        res.status(404).send("Error: course not found");
+        return;
+    }
+
+    // Delete course
+    const index = courses.indexOf(course);
+    courses.splice(index, 1);
+
+    res.send(course);
+})
+
 
 // get PORT number
 const port = process.env.PORT || 3000;
